@@ -1,25 +1,28 @@
-import { useState } from 'react';
-import { ATTRIBUTE_LIST } from '../constants/attributes';
+import React from 'react';
+import { ATTRIBUTE_LIST } from '../consts';
 
-const AttributeControls = () => {
-  const [attributes, setAttributes] = useState(
-    ATTRIBUTE_LIST.reduce((acc, attribute) => {
-      acc[attribute] = 10; // Default value for all attributes
-      return acc;
-    }, {} as Record<string, number>)
-  );
+interface Props {
+  attributes: Record<string, number>;
+  onAttributesChange: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
+}
 
+const AttributeControls: React.FC<Props> = ({
+  attributes,
+  onAttributesChange
+}) => {
   const incrementAttribute = (attribute: string) => {
-    setAttributes(prev => ({
+    onAttributesChange(prev => ({
       ...prev,
       [attribute]: prev[attribute] + 1
     }));
   };
 
   const decrementAttribute = (attribute: string) => {
-    setAttributes(prev => ({
+    onAttributesChange(prev => ({
       ...prev,
-      [attribute]: Math.max(0, prev[attribute] - 1) // Prevent going below 0
+      [attribute]: Math.max(0, prev[attribute] - 1)
     }));
   };
 
