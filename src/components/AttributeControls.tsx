@@ -1,30 +1,16 @@
-import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ATTRIBUTE_LIST } from '../consts';
+import {
+  decrementAttribute,
+  incrementAttribute
+} from '../state/characterSlice';
+import { RootState } from '../state/store';
 
-interface Props {
-  attributes: Record<string, number>;
-  onAttributesChange: React.Dispatch<
-    React.SetStateAction<Record<string, number>>
-  >;
-}
-
-const AttributeControls: React.FC<Props> = ({
-  attributes,
-  onAttributesChange
-}) => {
-  const incrementAttribute = (attribute: string) => {
-    onAttributesChange(prev => ({
-      ...prev,
-      [attribute]: prev[attribute] + 1
-    }));
-  };
-
-  const decrementAttribute = (attribute: string) => {
-    onAttributesChange(prev => ({
-      ...prev,
-      [attribute]: Math.max(0, prev[attribute] - 1)
-    }));
-  };
+const AttributeControls = () => {
+  const attributes = useSelector(
+    (state: RootState) => state.character.attributes
+  );
+  const dispatch = useDispatch();
 
   return (
     <div>
@@ -35,8 +21,12 @@ const AttributeControls: React.FC<Props> = ({
             <span>
               {attribute}: {attributes[attribute]}
             </span>
-            <button onClick={() => incrementAttribute(attribute)}>+</button>
-            <button onClick={() => decrementAttribute(attribute)}>-</button>
+            <button onClick={() => dispatch(incrementAttribute(attribute))}>
+              +
+            </button>
+            <button onClick={() => dispatch(decrementAttribute(attribute))}>
+              -
+            </button>
           </li>
         ))}
       </ul>
