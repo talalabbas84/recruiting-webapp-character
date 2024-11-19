@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { ATTRIBUTE_LIST } from '../consts';
+import { ATTRIBUTE_LIST } from '../constants/attributes';
 import {
   decrementAttribute,
   incrementAttribute
@@ -10,6 +10,9 @@ const AttributeControls = () => {
   const attributes = useSelector(
     (state: RootState) => state.character.attributes
   );
+  const modifiers = useSelector(
+    (state: RootState) => state.character.modifiers
+  );
   const dispatch = useDispatch();
 
   return (
@@ -19,7 +22,8 @@ const AttributeControls = () => {
         {ATTRIBUTE_LIST.map(attribute => (
           <li key={attribute}>
             <span>
-              {attribute}: {attributes[attribute]}
+              {attribute}: {attributes[attribute]} (Modifier:{' '}
+              {modifiers[attribute]})
             </span>
             <button onClick={() => dispatch(incrementAttribute(attribute))}>
               +
