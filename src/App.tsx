@@ -1,13 +1,13 @@
 import { Provider } from 'react-redux';
-import Character from './components/Character';
-import store from './state/store';
+import CharacterControl from './components/CharacterControl';
+import store from './redux/store';
 
 const App = () => {
   return (
     <Provider store={store}>
       <div>
         <h1>Recruiting WebApp Character</h1>
-        <Character />
+        <CharacterControl />
       </div>
     </Provider>
   );

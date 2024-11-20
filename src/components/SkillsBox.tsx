@@ -1,35 +1,72 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { decrementSkill, incrementSkill } from '../state/characterSlice';
-import { RootState } from '../state/store';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import {
+  decrementSpentSkill,
+  incrementSpentSkill
+} from '../redux/characterSlice';
+import { SkillState } from '../types/characterTypes';
 
-const SkillsBox = () => {
-  const skills = useSelector((state: RootState) => state.character.skills);
-  const totalSkillBudget = useSelector(
-    (state: RootState) => state.character.totalSkillBudget
-  );
+interface SkillsBoxProps {
+  characterId: string;
+  skills: SkillState;
+  totalBudget: number;
+}
+
+const SkillsBox: React.FC<SkillsBoxProps> = ({
+  characterId,
+  skills,
+  totalBudget
+}) => {
   const dispatch = useDispatch();
 
+  // Calculate total spent skill points
+  const totalSpent = Object.values(skills).reduce(
+    (total, skill) => total + skill.value,
+    0
+  );
+
+  // Calculate remaining budget
+  const remainingBudget = totalBudget - totalSpent;
+
+  // Render individual skill item
+  const renderSkillItem = (skillName: string, skill: SkillState[string]) => (
+    <li key={skillName} className='skill-item'>
+      <strong>{skillName}:</strong>
+      <span> Spent: {skill.value} </span>
+      <span> Modifier: {skill.modifier} </span>
+      <span> Total: {skill.value + skill.modifier} </span>
+      <div className='skill-controls'>
+        <button
+          onClick={() =>
+            dispatch(incrementSpentSkill({ skill: skillName, characterId }))
+          }
+          disabled={totalSpent >= totalBudget}
+        >
+          +
+        </button>
+        <button
+          onClick={() =>
+            dispatch(decrementSpentSkill({ skill: skillName, characterId }))
+          }
+          disabled={skill.value <= 0}
+        >
+          -
+        </button>
+      </div>
+    </li>
+  );
+
   return (
-    <div>
-      <h2>Skills</h2>
-      <p>Total Skill Budget: {totalSkillBudget}</p>
+    <div className='skills-box'>
+      <h3>Skills for {characterId}</h3>
+      <p>
+        <strong>Total Budget:</strong> {totalBudget} | <strong>Spent:</strong>{' '}
+        {totalSpent} | <strong>Remaining:</strong> {remainingBudget}
+      </p>
       <ul>
-        {Object.entries(skills).map(([skillName, skill]) => (
-          <li key={skillName}>
-            {skillName} - Points: {skill.value}, Modifier: {skill.modifier},
-            Total: {skill.value + skill.modifier}
-            <button
-              onClick={() => dispatch(incrementSkill({ skill: skillName }))}
-            >
-              +
-            </button>
-            <button
-              onClick={() => dispatch(decrementSkill({ skill: skillName }))}
-            >
-              -
-            </button>
-          </li>
-        ))}
+        {Object.entries(skills).map(([skillName, skill]) =>
+          renderSkillItem(skillName, skill)
+        )}
       </ul>
     </div>
   );
